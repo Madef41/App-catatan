@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+@page{
+size:A4 portrait;
+margin:0;
+}
+
+body{
+margin:0;
+background:white;
+font-family:Arial, sans-serif;
+}
+
+/* kertas */
+.paper{
+width:210mm;
+height:297mm;
+position:relative;
+border-bottom:1px solid black;
+}
+
+/* garis */
+.lines{
+position:absolute;
+top:0;
+left:0;
+right:0;
+bottom:0;
+
+background:
+repeating-linear-gradient(
+to bottom,
+transparent,
+transparent 24px,
+#777 25px
+);
+
+pointer-events:none;
+}
+
+/* tanggal */
+.tanggal{
+position:absolute;
+top:2mm;
+left:2mm;
+z-index:5;
+background:white;
+padding-right:5px;
+}
+
+.tgl{
+width:120px;
+border:none;
+border-bottom:1px solid black;
+outline:none;
+background:transparent;
+}
+
+/* kolom */
+.container{
+position:absolute;
+top:30px;
+left:0;
+right:0;
+bottom:0;
+
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+}
+
+.col{
+border-right:2px solid #000;
+}
+
+.col:last-child{
+border-right:none;
+}
+
+/* area ketik bebas */
+.ketik{
+width:100%;
+height:100%;
+
+outline:none;
+
+padding-left:10px;
+padding-right:5px;
+padding-top:3px;
+
+font-size:14px;
+line-height:25px;
+
+white-space:pre-wrap;
+}
+
+/* tombol */
+.fab{
+position:fixed;
+right:20px;
+
+width:55px;
+height:55px;
+
+border-radius:50%;
+border:none;
+
+color:white;
+font-size:18px;
+
+box-shadow:0 4px 10px rgba(0,0,0,0.3);
+
+z-index:999;
+}
+
+.print{
+bottom:20px;
+background:#27ae60;
+}
+
+.pdf{
+bottom:90px;
+background:#2980b9;
+}
+
+.reset{
+bottom:160px;
+background:#e74c3c;
+}
+
+/* PRINT TAJAM */
+@media print{
+
+.fab{
+display:none;
+}
+
+/* tampilkan isi */
+.ketik{
+color:black;
+}
+
+/* garis lebih jelas */
+.lines{
+background:
+repeating-linear-gradient(
+to bottom,
+transparent,
+transparent 24px,
+#444 25px
+);
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="paper">
+
+<div class="lines"></div>
+
+<div class="tanggal">
+Tanggal : <input class="tgl">
+</div>
+
+<div class="container">
+<div class="col"><div class="ketik" contenteditable="true"></div></div>
+<div class="col"><div class="ketik" contenteditable="true"></div></div>
+<div class="col"><div class="ketik" contenteditable="true"></div></div>
+</div>
+
+</div>
+
+<!-- tombol -->
+<button class="fab reset" onclick="hapusData()">🗑</button>
+<button class="fab pdf" onclick="downloadPDF()">📄</button>
+<button class="fab print" onclick="window.print()">🖨</button>
+
+<!-- PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+
+/* AUTO SAVE */
+document.querySelectorAll(".ketik, .tgl").forEach((el,i)=>{
+
+// load
+el.innerText = localStorage.getItem("data_"+i) || "";
+
+// save
+el.addEventListener("input", ()=>{
+localStorage.setItem("data_"+i, el.innerText);
+});
+
+});
+
+/* PDF */
+function downloadPDF(){
+let element = document.querySelector(".paper");
+
+html2pdf().set({
+margin:0,
+filename:'catatan.pdf',
+image:{ type:'jpeg', quality:1 },
+html2canvas:{ scale:3 },
+jsPDF:{ unit:'mm', format:'a4', orientation:'portrait' }
+}).from(element).save();
+}
+
+/* RESET */
+function hapusData(){
+if(confirm("Hapus semua isi?")){
+localStorage.clear();
+location.reload();
+}
+}
+
+</script>
+
+</body>
+</html>
