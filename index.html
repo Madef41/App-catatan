@@ -225,6 +225,19 @@ location.reload();
 }
 }
 
+// simpan data
+function simpanData(data) {
+  localStorage.setItem("catatan_data", JSON.stringify(data));
+}
+
+// ambil data
+function ambilData() {
+  return JSON.parse(localStorage.getItem("catatan_data")) || [];
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
 </script>
 
 </body>
